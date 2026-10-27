@@ -1,6 +1,7 @@
 import "dotenv/config";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/client";
+import pg from "pg";
+
+const { Pool } = pg;
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -8,13 +9,13 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is missing.");
 }
 
-const adapter = new PrismaPg({
+export const pool = new Pool({
   connectionString,
   max: 5,
   connectionTimeoutMillis: 10_000,
   idleTimeoutMillis: 30_000,
 });
 
-export const prisma = new PrismaClient({
-  adapter,
+pool.on("error", (error) => {
+  console.error("Unexpected idle database connection error:", error.message);
 });

@@ -1,17 +1,15 @@
-import { prisma } from "./client";
+import { pool } from "./client";
 
 async function main() {
-  const userCount = await prisma.user.count();
-  const organizationCount = await prisma.organization.count();
-  const membershipCount = await prisma.organizationMembership.count();
+  const result = await pool.query(`
+    SELECT
+      (SELECT COUNT(*)::int FROM users) AS users,
+      (SELECT COUNT(*)::int FROM organizations) AS organizations,
+      (SELECT COUNT(*)::int FROM organization_memberships) AS memberships;
+  `);
 
   console.log("Connected to Neon successfully.");
-
-  console.table({
-    users: userCount,
-    organizations: organizationCount,
-    organization_memberships: membershipCount,
-  });
+  console.table(result.rows);
 }
 
 main()
@@ -20,5 +18,5 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await pool.end();
   });
