@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:migrate": "node-pg-migrate up --migrations-dir packages/database/migrations --database-url-var DIRECT_DATABASE_URL --migrations-table pgmigrations",
+    "dev:api": "tsx watch apps/api/src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,13 +14,17 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "@types/express": "5.0.6",
     "@types/node": "22.20.5",
     "@types/pg": "8.23.1",
+    "node-pg-migrate": "9.0.0",
     "tsx": "4.23.15",
     "typescript": "5.9.3"
   },
   "dependencies": {
+    "argon2": "0.45.1",
     "dotenv": "17.4.2",
+    "express": "5.3.0",
     "pg": "8.23.1"
   }
 }
