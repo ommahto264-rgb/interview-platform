@@ -2,11 +2,14 @@ import express, { type ErrorRequestHandler } from "express";
 import { randomUUID } from "node:crypto";
 import * as argon2 from "argon2";
 import { pool } from "../../../packages/database/client";
+import {loginRouter} from "./routes/login";
 
 const app = express();
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "16kb" }));
+
+app.use("/api/auth", loginRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
