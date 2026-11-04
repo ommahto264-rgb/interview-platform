@@ -3,11 +3,14 @@ import { randomUUID } from "node:crypto";
 import * as argon2 from "argon2";
 import { pool } from "../../../packages/database/client";
 import {loginRouter} from "./routes/login";
+import cookieParser from "cookie-parser";
+import { requireAuth } from "./middleware/require-auth";
 
 const app = express();
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "16kb" }));
+app.use(cookieParser());
 
 app.use("/api/auth", loginRouter);
 
@@ -91,6 +94,12 @@ app.post("/api/auth/register", async (req, res) => {
 
   res.status(201).json({
     message: "Account created successfully.",
+  });
+});
+
+app.get("/api/auth/session", requireAuth, (_req, res) => {
+  res.status(200).json({
+    message: "You are authenticated.",
   });
 });
 
