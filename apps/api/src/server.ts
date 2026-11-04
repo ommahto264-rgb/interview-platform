@@ -5,6 +5,8 @@ import { pool } from "../../../packages/database/client";
 import {loginRouter} from "./routes/login";
 import cookieParser from "cookie-parser";
 import { requireAuth } from "./middleware/require-auth";
+import { refreshRouter } from "./routes/refresh";
+import { logoutRouter } from "./routes/logout";
 
 const app = express();
 
@@ -13,6 +15,8 @@ app.use(express.json({ limit: "16kb" }));
 app.use(cookieParser());
 
 app.use("/api/auth", loginRouter);
+app.use("/api/auth", refreshRouter);
+app.use("/api/auth", logoutRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
