@@ -167,3 +167,60 @@ challengeRouter.get(
     });
   },
 );
+
+challengeRouter.get(
+  "/:organizationId/challenge-versions/:versionId",
+  requireAuth,
+  requireMember,
+  async (req, res) => {
+    const { organizationId, versionId } = req.params;
+
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (
+      typeof versionId !== "string" ||
+      !uuidPattern.test(versionId)
+    ) {
+      res.status(400).json({ error: "Invalid version ID." });
+      return;
+    }
+
+    const result = await pool.query(
+      `SELECT
+         v.id AS version_id,
+         v.challenge_id,
+         v.version_number,
+         v.title,
+         v.description,
+         v.language,
+         v.starter_code
+       FROM challenge_versions v
+       JOIN challenges c ON c.id = v.challenge_id
+       WHERE v.id = $1 AND c.organization_id = $2`,
+      [versionId, organizationId],
+    );
+
+    const challenge = result.rows[0];
+
+    if (!challenge) {
+      res.status(404).json({ error: "Challenge version not found." });
+      return;
+    }
+
+    const examples = await pool.query(
+      `SELECT position, input, expected_output
+       FROM challenge_test_cases
+       WHERE challenge_version_id = $1 AND is_hidden = FALSE
+       ORDER BY position`,
+      [versionId],
+    );
+
+    res.setHeader("Cache-Control", "no-store");
+
+    res.json({
+      challenge,
+      examples: examples.rows,
+    });
+  },
+);
