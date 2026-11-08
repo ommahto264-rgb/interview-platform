@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import { requireAuth } from "./middleware/require-auth";
 import { refreshRouter } from "./routes/refresh";
 import { logoutRouter } from "./routes/logout";
+import { organizationRouter } from "./routes/organizations";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use("/api/auth", loginRouter);
 app.use("/api/auth", refreshRouter);
 app.use("/api/auth", logoutRouter);
+app.use("/api/organizations", organizationRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
