@@ -159,3 +159,60 @@ interviewRouter.get(
     });
   },
 );
+
+interviewRouter.get(
+  "/:organizationId/interviews/:interviewId",
+  requireAuth,
+  requireMember,
+  async (req, res) => {
+    const { organizationId, interviewId } = req.params;
+    const userId = res.locals.auth.userId;
+    const role = res.locals.organizationRole;
+
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (
+      typeof interviewId !== "string" ||
+      !uuidPattern.test(interviewId)
+    ) {
+      res.status(400).json({ error: "Invalid interview ID." });
+      return;
+    }
+
+    const result = await pool.query(
+      `SELECT
+         i.id,
+         i.title,
+         i.status,
+         i.scheduled_start_at,
+         i.scheduled_end_at,
+         i.interviewer_id,
+         u.name AS interviewer_name,
+         v.id AS challenge_version_id,
+         v.version_number,
+         v.title AS challenge_title,
+         v.description,
+         v.language,
+         v.starter_code
+       FROM interviews i
+       JOIN users u ON u.id = i.interviewer_id
+       JOIN challenge_versions v ON v.id = i.challenge_version_id
+       WHERE i.id = $1
+         AND i.organization_id = $2
+         AND ($3::text = 'ADMIN' OR i.interviewer_id = $4)`,
+      [interviewId, organizationId, role, userId],
+    );
+
+    const interview = result.rows[0];
+
+    res.setHeader("Cache-Control", "no-store");
+
+    if (!interview) {
+      res.status(404).json({ error: "Interview not found." });
+      return;
+    }
+
+    res.json({ interview });
+  },
+);
