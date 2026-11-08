@@ -9,6 +9,7 @@ import { refreshRouter } from "./routes/refresh";
 import { logoutRouter } from "./routes/logout";
 import { organizationRouter } from "./routes/organizations";
 import { challengeRouter } from "./routes/challenges";
+import { interviewRouter } from "./routes/interviews";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/api/auth", refreshRouter);
 app.use("/api/auth", logoutRouter);
 app.use("/api/organizations", organizationRouter);
 app.use("/api/organizations", challengeRouter);
+app.use("/api/organizations", interviewRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
