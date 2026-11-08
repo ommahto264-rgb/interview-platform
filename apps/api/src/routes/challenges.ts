@@ -224,3 +224,140 @@ challengeRouter.get(
     });
   },
 );
+
+challengeRouter.post(
+  "/:organizationId/challenges/:challengeId/versions",
+  requireAuth,
+  requireAdmin,
+  async (req, res) => {
+    const { organizationId, challengeId } = req.params;
+    const { title, description, starterCode, tests } = req.body ?? {};
+
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (
+      typeof challengeId !== "string" ||
+      !uuidPattern.test(challengeId)
+    ) {
+      res.status(400).json({ error: "Invalid challenge ID." });
+      return;
+    }
+
+    if (
+      typeof title !== "string" ||
+      title.trim().length === 0 ||
+      title.trim().length > 200 ||
+      typeof description !== "string" ||
+      description.trim().length === 0 ||
+      description.length > 12000 ||
+      typeof starterCode !== "string" ||
+      starterCode.trim().length === 0 ||
+      starterCode.length > 10000
+    ) {
+      res.status(400).json({
+        error: "Provide a valid title, description, and starter code.",
+      });
+      return;
+    }
+
+    if (!Array.isArray(tests) || tests.length < 1 || tests.length > 100) {
+      res.status(400).json({
+        error: "Provide between 1 and 100 test cases.",
+      });
+      return;
+    }
+
+    for (const test of tests) {
+      if (
+        !test ||
+        !Array.isArray(test.input) ||
+        !Object.hasOwn(test, "expectedOutput") ||
+        typeof test.isHidden !== "boolean"
+      ) {
+        res.status(400).json({
+          error: "Each test needs input, expectedOutput, and isHidden.",
+        });
+        return;
+      }
+    }
+
+    const versionId = randomUUID();
+    const userId = res.locals.auth.userId;
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const challenge = await client.query(
+        `SELECT id FROM challenges
+         WHERE id = $1 AND organization_id = $2
+         FOR UPDATE`,
+        [challengeId, organizationId],
+      );
+
+      if (challenge.rowCount === 0) {
+        await client.query("ROLLBACK");
+        res.status(404).json({ error: "Challenge not found." });
+        return;
+      }
+
+      const versions = await client.query(
+        `SELECT COALESCE(MAX(version_number), 0) + 1 AS next_version
+         FROM challenge_versions
+         WHERE challenge_id = $1`,
+        [challengeId],
+      );
+
+      const nextVersion = versions.rows[0].next_version;
+
+      await client.query(
+        `INSERT INTO challenge_versions (
+           id, challenge_id, version_number,
+           title, description, starter_code, created_by
+         )
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          versionId,
+          challengeId,
+          nextVersion,
+          title.trim(),
+          description.trim(),
+          starterCode,
+          userId,
+        ],
+      );
+
+      for (let i = 0; i < tests.length; i++) {
+        const test = tests[i];
+
+        await client.query(
+          `INSERT INTO challenge_test_cases (
+             id, challenge_version_id, position,
+             input, expected_output, is_hidden
+           )
+           VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6)`,
+          [
+            randomUUID(),
+            versionId,
+            i + 1,
+            JSON.stringify(test.input),
+            JSON.stringify(test.expectedOutput),
+            test.isHidden,
+          ],
+        );
+      }
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    res.status(201).json({
+      message: "Challenge version created successfully.",
+    });
+  },
+);
