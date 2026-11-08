@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { pool } from "../../../../packages/database/client";
 import { requireAuth } from "../middleware/require-auth";
 import { requireAdmin } from "../middleware/require-admin";
+import { requireMember } from "../middleware/require-member";
 
 export const interviewRouter = Router();
 
@@ -118,6 +119,43 @@ interviewRouter.post(
 
     res.status(201).json({
       message: "Interview scheduled successfully.",
+    });
+  },
+);
+
+interviewRouter.get(
+  "/:organizationId/interviews",
+  requireAuth,
+  requireMember,
+  async (req, res) => {
+    const userId = res.locals.auth.userId;
+    const role = res.locals.organizationRole;
+
+    const result = await pool.query(
+      `SELECT
+         i.id,
+         i.title,
+         i.status,
+         i.scheduled_start_at,
+         i.scheduled_end_at,
+         i.interviewer_id,
+         u.name AS interviewer_name,
+         v.title AS challenge_title,
+         v.version_number
+       FROM interviews i
+       JOIN users u ON u.id = i.interviewer_id
+       JOIN challenge_versions v ON v.id = i.challenge_version_id
+       WHERE i.organization_id = $1
+         AND ($2::text = 'ADMIN' OR i.interviewer_id = $3)
+       ORDER BY i.scheduled_start_at DESC, i.id
+       LIMIT 50`,
+      [req.params.organizationId, role, userId],
+    );
+
+    res.setHeader("Cache-Control", "no-store");
+
+    res.json({
+      interviews: result.rows,
     });
   },
 );

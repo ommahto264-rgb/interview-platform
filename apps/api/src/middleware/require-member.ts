@@ -31,5 +31,15 @@ export async function requireMember(
     return;
   }
 
+  res.locals.organizationRole = result.rows[0].role;
+  
+
+    if (result.rowCount === 0) {
+    res.status(404).json({ error: "Organization not found." });
+    return;
+  }
+
+  res.locals.organizationRole = result.rows[0].role;
+
   next();
 }
