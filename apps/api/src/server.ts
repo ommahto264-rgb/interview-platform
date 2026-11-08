@@ -10,6 +10,8 @@ import { logoutRouter } from "./routes/logout";
 import { organizationRouter } from "./routes/organizations";
 import { challengeRouter } from "./routes/challenges";
 import { interviewRouter } from "./routes/interviews";
+import { invitationRouter } from "./routes/invitations";
+import { candidateInterviewRouter } from "./routes/candidate-interviews";
 
 const app = express();
 
@@ -23,6 +25,8 @@ app.use("/api/auth", logoutRouter);
 app.use("/api/organizations", organizationRouter);
 app.use("/api/organizations", challengeRouter);
 app.use("/api/organizations", interviewRouter);
+app.use("/api/invitations", invitationRouter);
+app.use("/api/candidate/interviews", candidateInterviewRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
