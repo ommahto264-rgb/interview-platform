@@ -111,3 +111,61 @@ export async function createInterviewEvaluation(req: Request, res: Response) {
       message: "Evaluation submitted successfully.",
     });
 }
+
+export async function listInterviewEvaluations(
+  req: Request,
+  res: Response,
+) {
+  const { organizationId, interviewId } = req.params;
+  const userId = res.locals.auth.userId;
+  const role = res.locals.organizationRole;
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  if (
+    typeof interviewId !== "string" ||
+    !uuidPattern.test(interviewId)
+  ) {
+    res.status(400).json({ error: "Invalid interview ID." });
+    return;
+  }
+
+  res.setHeader("Cache-Control", "no-store");
+
+  const interview = await pool.query(
+    `SELECT id FROM interviews
+     WHERE id = $1
+       AND organization_id = $2
+       AND ($3::text = 'ADMIN' OR interviewer_id = $4)`,
+    [interviewId, organizationId, role, userId],
+  );
+
+  if (interview.rowCount === 0) {
+    res.status(404).json({ error: "Interview not found." });
+    return;
+  }
+
+  const result = await pool.query(
+    `SELECT
+       e.id,
+       e.reviewer_id,
+       u.name AS reviewer_name,
+       e.problem_solving_score,
+       e.code_quality_score,
+       e.communication_score,
+       e.recommendation,
+       e.feedback,
+       e.created_at
+     FROM interview_evaluations e
+     JOIN users u ON u.id = e.reviewer_id
+     WHERE e.interview_id = $1
+     ORDER BY e.created_at DESC, e.id
+     LIMIT 50`,
+    [interviewId],
+  );
+
+  res.json({
+    evaluations: result.rows,
+  });
+}

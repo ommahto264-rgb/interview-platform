@@ -6,8 +6,7 @@ import { createInterview, listInterviews, getInterview } from "../controllers/in
 import { createInterviewInvitation } from "../controllers/interview-invitations";
 import { startInterview, completeInterview } from "../controllers/interview-lifecycle";
 import { listInterviewSubmissions } from "../controllers/interview-submissions";
-import { createInterviewEvaluation } from "../controllers/interview-evaluations";
-
+import { createInterviewEvaluation, listInterviewEvaluations,} from "../controllers/interview-evaluations";
 export const interviewRouter = Router();
 
 interviewRouter.post(
@@ -15,6 +14,13 @@ interviewRouter.post(
   requireAuth,
   requireAdmin,
   createInterview,
+);
+
+interviewRouter.get(
+  "/:organizationId/interviews/:interviewId/evaluations",
+  requireAuth,
+  requireMember,
+  listInterviewEvaluations,
 );
 
 interviewRouter.get(
