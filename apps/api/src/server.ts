@@ -165,8 +165,14 @@ async function start() {
   });
 }
 
-start().catch(async () => {
-  console.error("API startup failed. Check database connectivity and .env.");
+start().catch(async (error) => {
+  console.error("API startup failed:", {
+    name: error?.name,
+    code: error?.code,
+    causeCode: error?.cause?.code,
+  });
+
+  console.error("Error message:", error?.message);
   await pool.end();
   process.exitCode = 1;
 });
