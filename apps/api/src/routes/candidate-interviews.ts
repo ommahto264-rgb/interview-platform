@@ -126,20 +126,25 @@ candidateInterviewRouter.post(
     }
 
     const result = await pool.query(
-      `INSERT INTO submissions (
-         id, interview_id, candidate_id, source_code
-       )
-       SELECT $1, i.id, c.user_id, $2
-       FROM interviews i
-       JOIN interview_candidates c ON c.interview_id = i.id
-       WHERE i.id = $3
-         AND c.user_id = $4
-         AND i.status = 'IN_PROGRESS'
-         AND i.scheduled_start_at <= NOW()
-         AND i.scheduled_end_at > NOW()
-       RETURNING id`,
-      [randomUUID(), sourceCode, interviewId, userId],
-    );
+  `WITH eligible_interview AS (
+     SELECT i.id, c.user_id
+     FROM interviews i
+     JOIN interview_candidates c ON c.interview_id = i.id
+     WHERE i.id = $3
+       AND c.user_id = $4
+       AND i.status = 'IN_PROGRESS'
+       AND i.scheduled_start_at <= NOW()
+       AND i.scheduled_end_at > NOW()
+     FOR SHARE OF i
+   )
+   INSERT INTO submissions (
+     id, interview_id, candidate_id, source_code
+   )
+   SELECT $1, id, user_id, $2
+   FROM eligible_interview
+   RETURNING id`,
+  [randomUUID(), sourceCode, interviewId, userId],
+);
 
     res.setHeader("Cache-Control", "no-store");
 

@@ -404,3 +404,51 @@ interviewRouter.post(
     res.json({ message: "Interview started successfully." });
   },
 );
+
+interviewRouter.post(
+  "/:organizationId/interviews/:interviewId/complete",
+  requireAuth,
+  requireMember,
+  async (req, res) => {
+    const { organizationId, interviewId } = req.params;
+    const userId = res.locals.auth.userId;
+    const role = res.locals.organizationRole;
+
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (
+      typeof interviewId !== "string" ||
+      !uuidPattern.test(interviewId)
+    ) {
+      res.status(400).json({ error: "Invalid interview ID." });
+      return;
+    }
+
+    const result = await pool.query(
+      `UPDATE interviews
+       SET status = 'COMPLETED',
+           completed_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $1
+         AND organization_id = $2
+         AND ($3::text = 'ADMIN' OR interviewer_id = $4)
+         AND status = 'IN_PROGRESS'
+       RETURNING id`,
+      [interviewId, organizationId, role, userId],
+    );
+
+    res.setHeader("Cache-Control", "no-store");
+
+    if (result.rowCount === 0) {
+      res.status(409).json({
+        error: "Interview cannot be completed. Check access and status.",
+      });
+      return;
+    }
+
+    res.json({
+      message: "Interview completed successfully.",
+    });
+  },
+);
