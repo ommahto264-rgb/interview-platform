@@ -1,3 +1,4 @@
+import { getSubmissionExecution } from "../controllers/submission-executions";
 import { Router } from "express";
 import { requireAuth } from "../middleware/require-auth";
 import { requireAdmin } from "../middleware/require-admin";
@@ -70,4 +71,9 @@ interviewRouter.post(
   requireAuth,
   requireMember,
   createInterviewEvaluation,
+);
+
+interviewRouter.get(
+  '/:organizationId/interviews/:interviewId/submissions/:submissionId/execution',
+  requireAuth, requireMember, getSubmissionExecution,
 );

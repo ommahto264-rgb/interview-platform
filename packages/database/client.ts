@@ -12,7 +12,9 @@ if (!connectionString) {
 export const pool = new Pool({
   connectionString,
   max: 5,
-  connectionTimeoutMillis: 10_000,
+  connectionTimeoutMillis: 30_000,
+  statement_timeout: 10_000,
+  query_timeout: 15_000,
   idleTimeoutMillis: 30_000,
 });
 

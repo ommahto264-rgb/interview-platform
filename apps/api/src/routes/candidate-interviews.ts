@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { pool } from "../../../../packages/database/client";
 import { requireAuth } from "../middleware/require-auth";
-import { randomUUID } from "node:crypto";
+import { submitCode, getSubmissionExecution } from "../controllers/submission-executions";
 
 export const candidateInterviewRouter = Router();
 
@@ -95,70 +95,9 @@ candidateInterviewRouter.get(
   },
 );
 
-candidateInterviewRouter.post(
-  "/:interviewId/submissions",
-  requireAuth,
-  async (req, res) => {
-    const { interviewId } = req.params;
-    const { sourceCode } = req.body ?? {};
-    const userId = res.locals.auth.userId;
-
-    const uuidPattern =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-    if (
-      typeof interviewId !== "string" ||
-      !uuidPattern.test(interviewId)
-    ) {
-      res.status(400).json({ error: "Invalid interview ID." });
-      return;
-    }
-
-    if (
-      typeof sourceCode !== "string" ||
-      sourceCode.trim().length === 0 ||
-      Buffer.byteLength(sourceCode, "utf8") > 10240
-    ) {
-      res.status(400).json({
-        error: "Provide non-empty source code of at most 10 KiB.",
-      });
-      return;
-    }
-
-    const result = await pool.query(
-  `WITH eligible_interview AS (
-     SELECT i.id, c.user_id
-     FROM interviews i
-     JOIN interview_candidates c ON c.interview_id = i.id
-     WHERE i.id = $3
-       AND c.user_id = $4
-       AND i.status = 'IN_PROGRESS'
-       AND i.scheduled_start_at <= NOW()
-       AND i.scheduled_end_at > NOW()
-     FOR SHARE OF i
-   )
-   INSERT INTO submissions (
-     id, interview_id, candidate_id, source_code
-   )
-   SELECT $1, id, user_id, $2
-   FROM eligible_interview
-   RETURNING id`,
-  [randomUUID(), sourceCode, interviewId, userId],
-);
-
-    res.setHeader("Cache-Control", "no-store");
-
-    if (result.rowCount === 0) {
-      res.status(409).json({
-        error: "Submission unavailable. You must be the candidate in an active interview.",
-      });
-      return;
-    }
-
-    res.status(201).json({
-      message: "Code submitted successfully.",
-    });
-  },
+candidateInterviewRouter.post('/:interviewId/submissions', requireAuth, submitCode);
+candidateInterviewRouter.get(
+  '/:interviewId/submissions/:submissionId/execution', requireAuth, getSubmissionExecution,
 );
 
 candidateInterviewRouter.get(

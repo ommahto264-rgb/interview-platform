@@ -4,9 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --import tsx --test tests/*.test.ts",
     "db:migrate": "node-pg-migrate up --migrations-dir packages/database/migrations --database-url-var DIRECT_DATABASE_URL --migrations-table pgmigrations",
-    "dev:api": "tsx watch apps/api/src/server.ts"
+    "dev:api": "tsx watch apps/api/src/server.ts",
+    "dev:worker": "node --import tsx apps/worker/src/worker.ts",
+    "runner:build": "docker build -t interview-runner:v1 apps/worker/runner",
+    "typecheck": "tsc --noEmit",
+    "test:integration": "node --import tsx --test --test-concurrency=1 tests/integration/*.test.ts",
+    "test:docker": "node --import tsx --test tests/docker/*.test.ts"
   },
   "keywords": [],
   "author": "",
