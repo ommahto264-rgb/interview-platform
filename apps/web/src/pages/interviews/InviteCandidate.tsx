@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import '../organizations/OrganizationMembers.css'
 
 type Props = {
   organizationId: string
@@ -11,20 +12,32 @@ export default function InviteCandidate({
   interviewId,
 }: Props) {
   const [email, setEmail] = useState('')
-  const [token, setToken] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
 
+  const submitting = useRef(false)
+
   async function handleInvite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (saving) return
+    if (submitting.current) return
 
-    setSaving(true)
     setError('')
     setMessage('')
-    setToken('')
+
+    const cleanEmail = email.trim().toLowerCase()
+
+    if (
+      cleanEmail.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)
+    ) {
+      setError('Enter a valid email address.')
+      return
+    }
+
+    submitting.current = true
+    setSaving(true)
 
     try {
       const response = await fetch(
@@ -36,9 +49,7 @@ export default function InviteCandidate({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            email: email.trim().toLowerCase(),
-          }),
+          body: JSON.stringify({ email: cleanEmail }),
         },
       )
 
@@ -54,60 +65,55 @@ export default function InviteCandidate({
         return
       }
 
-      if (typeof data.invitationToken !== 'string') {
-        setError('The server did not return an invitation token.')
-        return
-      }
-
-      setToken(data.invitationToken)
-      setMessage('Invitation created for local testing. No email was sent.')
+      setEmail('')
+      setMessage(
+        `Invitation created for ${cleanEmail}. They can sign in and accept it from Dashboard → Invitations.`,
+      )
     } catch {
       setError(
         'Unable to confirm whether the invitation was created. Retrying will replace any previous unused invitation.',
       )
     } finally {
+      submitting.current = false
       setSaving(false)
     }
   }
 
-  async function copyToken() {
-    try {
-      await navigator.clipboard.writeText(token)
-      setMessage('Invitation token copied.')
-    } catch {
-      setMessage('Select the token below and copy it manually.')
-    }
-  }
-
   return (
-    <section className="challenge-panel" aria-labelledby="invite-title">
-      <p className="workspace-eyebrow">Candidate access</p>
-      <h2 id="invite-title">Invite a candidate</h2>
+    <section
+      className="members-add"
+      aria-labelledby="invite-candidate-title"
+    >
+      <h3 id="invite-candidate-title">Invite a candidate</h3>
 
-      <p className="workspace-description">
-        The candidate must accept using an account with this email address.
-        Creating a new invitation replaces any previous unused invitation.
+      <p>
+        The invitation will appear in the candidate’s account when they sign
+        in with this email address. They must accept before joining the
+        interview. Creating another invitation replaces the previous unused
+        invitation.
       </p>
 
       <form onSubmit={handleInvite}>
         <label htmlFor="candidate-email">Candidate email</label>
 
-        <input
-          id="candidate-email"
-          name="email"
-          type="email"
-          autoComplete="off"
-          placeholder="candidate@example.com"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          maxLength={254}
-          required
-          disabled={saving}
-        />
+        <div className="members-form-row">
+          <input
+            id="candidate-email"
+            name="email"
+            type="email"
+            autoComplete="off"
+            placeholder="candidate@example.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            maxLength={254}
+            required
+            disabled={saving}
+          />
 
-        <button type="submit" disabled={saving}>
-          {saving ? 'Creating invitation…' : 'Create invitation'}
-        </button>
+          <button type="submit" disabled={saving}>
+            {saving ? 'Creating invitation…' : 'Create invitation'}
+          </button>
+        </div>
       </form>
 
       {error && (
@@ -117,27 +123,9 @@ export default function InviteCandidate({
       )}
 
       {message && (
-        <p className="workspace-description" role="status">
+        <p className="members-success" role="status">
           {message}
         </p>
-      )}
-
-      {token && (
-        <div>
-          <label htmlFor="invitation-token">Local testing token</label>
-
-          <textarea
-            id="invitation-token"
-            value={token}
-            readOnly
-            rows={3}
-            spellCheck={false}
-          />
-
-          <button type="button" onClick={() => void copyToken()}>
-            Copy token
-          </button>
-        </div>
       )}
     </section>
   )

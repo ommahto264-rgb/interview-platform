@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import InterviewActions from './InterviewActions'
 import InviteCandidate from './InviteCandidate'
-
+import InterviewSubmissions from './InterviewSubmissions'
 import './InterviewDetailsPage.css'
 
 type Interview = {
@@ -36,6 +36,7 @@ export default function InterviewDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
+  const [view, setView] = useState<'overview' | 'submissions'>('overview')
 
   const organizationPath = organizationId
     ? `/organizations/${encodeURIComponent(organizationId)}`
@@ -108,155 +109,165 @@ export default function InterviewDetailsPage() {
   }, [organizationId, interviewId, attempt, navigate])
 
   return (
-    <div className="workspace">
-      <aside className="workspace-sidebar">
-        <Link to="/" className="workspace-brand">
-          <span className="workspace-monogram" aria-hidden="true">
-            IP
-          </span>
-
-          <span>
-            INTERVIEW
-            <small>PLATFORM</small>
-          </span>
+    <div className="review-room">
+      <header className="review-topbar">
+        <Link to="/dashboard" className="review-brand">
+          <span aria-hidden="true">IP</span>
+          <strong>Interview Platform</strong>
         </Link>
 
-        <div className="workspace-sidebar-body">
-          <p className="workspace-nav-label">Interview details</p>
+        <span className="review-topbar-label">Interviewer workspace</span>
 
-          <div className="workspace-sidebar-note">
-            <span className="workspace-note-line" aria-hidden="true" />
-            <p>The challenge. The conversation. The evidence.</p>
+        <Link to={organizationPath}>← Organization</Link>
+      </header>
+
+      <main className="review-main">
+        {loading ? (
+          <div className="review-state" role="status">
+            <h1>Loading interview</h1>
+            <p>Fetching the session details.</p>
           </div>
-        </div>
+        ) : error ? (
+          <div className="review-state" role="alert">
+            <h1>Interview unavailable</h1>
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={() => setAttempt((value) => value + 1)}
+            >
+              Try again
+            </button>
+          </div>
+        ) : interview && organizationId ? (
+          <>
+            <section className="review-summary">
+              <div>
+                <p className="review-eyebrow">Technical interview</p>
+                <h1>{interview.title}</h1>
+                <p className="review-summary-meta">
+                  {interview.interviewer_name}
+                  {' · '}
+                  {interview.challenge_title}
+                  {' · Version '}
+                  {interview.version_number}
+                </p>
+              </div>
 
-        <div className="workspace-sidebar-footer">
-          <Link to={organizationPath}>← Back to organization</Link>
-          <Link to="/dashboard">Go to dashboard</Link>
-        </div>
-      </aside>
+              <span
+                className="review-status"
+                data-status={interview.status}
+              >
+                {interview.status.replaceAll('_', ' ')}
+              </span>
+            </section>
 
-      <div className="workspace-content">
-        <header className="workspace-topbar">
-          <p>
-            <Link to={organizationPath}>Organization</Link>
-            <span aria-hidden="true">/</span>
-            <strong>Interview details</strong>
-          </p>
-
-          {interview && (
-            <span className="workspace-role">
-              {interview.status.replaceAll('_', ' ')}
-            </span>
-          )}
-        </header>
-
-        <main className="workspace-main">
-          {loading ? (
-            <div className="workspace-state" role="status">
-              <h2>Loading interview.</h2>
-              <p>Fetching the schedule and assigned challenge.</p>
-            </div>
-          ) : error ? (
-            <div className="workspace-state" role="alert">
-              <h2>Unable to open this interview.</h2>
-              <p>{error}</p>
+            <nav className="review-navigation" aria-label="Interview sections">
+              <button
+                type="button"
+                aria-pressed={view === 'overview'}
+                onClick={() => setView('overview')}
+              >
+                Overview
+              </button>
 
               <button
                 type="button"
-                onClick={() => setAttempt((value) => value + 1)}
+                aria-pressed={view === 'submissions'}
+                onClick={() => setView('submissions')}
               >
-                Try again
+                Submissions
               </button>
-            </div>
-          ) : interview ? (
-            <>
-              <section className="workspace-heading">
-                <div>
-                  <p className="workspace-eyebrow">Technical interview</p>
-                  <h1>{interview.title}</h1>
-                  <p className="workspace-description">
-                    Review the schedule, interviewer and assigned challenge.
-                  </p>
-                </div>
-              </section>
+            </nav>
 
-              <div className="challenge-layout">
-                <section className="challenge-panel">
-                  <p className="workspace-eyebrow">The session</p>
-                  <h2>Interview information</h2>
+            <div hidden={view !== 'overview'}>
+              <div className="review-overview-grid">
+                <section className="review-card">
+                  <p className="review-eyebrow">Schedule</p>
+                  <h2>Session information</h2>
 
-                  <p className="challenge-value-label">Interviewer</p>
-                  <p>{interview.interviewer_name}</p>
+                  <dl className="review-facts">
+                    <div>
+                      <dt>Interviewer</dt>
+                      <dd>{interview.interviewer_name}</dd>
+                    </div>
 
-                  <p className="challenge-value-label">Starts</p>
-                  <p>
-                    <time dateTime={interview.scheduled_start_at}>
-                      {formatDate(interview.scheduled_start_at)}
-                    </time>
-                  </p>
+                    <div>
+                      <dt>Starts</dt>
+                      <dd>
+                        <time dateTime={interview.scheduled_start_at}>
+                          {formatDate(interview.scheduled_start_at)}
+                        </time>
+                      </dd>
+                    </div>
 
-                  <p className="challenge-value-label">Ends</p>
-                  <p>
-                    <time dateTime={interview.scheduled_end_at}>
-                      {formatDate(interview.scheduled_end_at)}
-                    </time>
-                  </p>
+                    <div>
+                      <dt>Ends</dt>
+                      <dd>
+                        <time dateTime={interview.scheduled_end_at}>
+                          {formatDate(interview.scheduled_end_at)}
+                        </time>
+                      </dd>
+                    </div>
+                  </dl>
 
-                  <p className="workspace-description">
+                  <p className="review-muted">
                     Times are displayed in your local timezone.
                   </p>
                 </section>
 
-                <section className="challenge-panel">
-                  <p className="workspace-eyebrow">
+                <section className="review-card">
+                  <p className="review-eyebrow">
                     {interview.language} · Version {interview.version_number}
                   </p>
-
                   <h2>{interview.challenge_title}</h2>
 
-                  <p className="challenge-description">
+                  <p className="review-problem-description">
                     {interview.description}
                   </p>
 
                   <Link
+                    className="review-text-link"
                     to={
                       `${organizationPath}/challenge-versions/` +
                       encodeURIComponent(interview.challenge_version_id)
                     }
                   >
-                    View challenge and examples →
+                    View challenge and examples ↗
                   </Link>
                 </section>
-                            </div>
+              </div>
 
-                            {organizationId && (
-                <>
-                  {interview.status === 'SCHEDULED' && (
-                    <div className="interview-actions interview-invitation">
-                      <InviteCandidate
-                        key={interview.id}
-                        organizationId={organizationId}
-                        interviewId={interview.id}
-                      />
-                    </div>
-                  )}
+              <div className="review-controls">
+                <InterviewActions
+                  key={interview.id}
+                  organizationId={organizationId}
+                  interviewId={interview.id}
+                  status={interview.status}
+                  onUpdated={() => setAttempt((value) => value + 1)}
+                />
+              </div>
 
-                  <div className="interview-actions">
-                    <InterviewActions
-                      key={interview.id}
-                      organizationId={organizationId}
-                      interviewId={interview.id}
-                      status={interview.status}
-                      onUpdated={() => setAttempt((value) => value + 1)}
-                    />
-                  </div>
-                </>
+              {interview.status === 'SCHEDULED' && (
+                <div className="review-invite interview-invitation">
+                  <InviteCandidate
+                    key={interview.id}
+                    organizationId={organizationId}
+                    interviewId={interview.id}
+                  />
+                </div>
               )}
-            </>
-          ) : null}
-        </main>
-      </div>
+            </div>
+
+            {view === 'submissions' && (
+              <InterviewSubmissions
+                key={`${organizationId}:${interview.id}`}
+                organizationId={organizationId}
+                interviewId={interview.id}
+              />
+            )}
+          </>
+        ) : null}
+      </main>
     </div>
   )
 }

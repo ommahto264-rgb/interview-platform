@@ -12,6 +12,8 @@ import CreateInterviewPage from './pages/interviews/CreateInterviewPage'
 import InterviewDetailsPage from './pages/interviews/InterviewDetailsPage'
 import AcceptInvitationPage from './pages/interviews/AcceptInvitationPage'
 import CandidateInterviewPage from './pages/candidate/CandidateInterviewPage'
+import CreateOrganizationPage from './pages/organizations/CreateOrganizationPage'
+import AcceptOrganizationInvitationPage from './pages/organizations/AcceptOrganizationInvitationPage'
 
 import './App.css'
 import './pages/landing/LandingPage.css'
@@ -29,6 +31,8 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route path="/organization-invitations/accept" element={<AcceptOrganizationInvitationPage />}/>
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
@@ -66,6 +70,11 @@ export default function App() {
           <Route
             path="/candidate/interviews/:interviewId"
             element={<CandidateInterviewPage />}
+          />
+
+          <Route
+            path="/organizations/new"
+            element={<CreateOrganizationPage />}
           />
         </Route>
 

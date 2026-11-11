@@ -843,3 +843,26 @@
     transition: none;
   }
 }
+
+.workspace-sidebar {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: #365040 #06110e;
+}
+
+.workspace-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workspace-sidebar::-webkit-scrollbar-track {
+  background: #06110e;
+}
+
+.workspace-sidebar::-webkit-scrollbar-thumb {
+  background: #365040;
+  border-radius: 6px;
+}
+
+.workspace-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #52705b;
+}

@@ -18,13 +18,19 @@ type Execution = {
 
 type Props = {
   executionUrl: string
+  audience?: 'candidate' | 'staff'
 }
+
+
 
 function readable(value: string) {
   return value.replaceAll('_', ' ').toLowerCase()
 }
 
-export default function ExecutionResults({ executionUrl }: Props) {
+export default function ExecutionResults({
+  executionUrl,
+  audience = 'candidate',
+}: Props) {
   const [execution, setExecution] = useState<Execution | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -159,7 +165,9 @@ export default function ExecutionResults({ executionUrl }: Props) {
       {execution?.status === 'COMPLETED' &&
         execution.results.length > 0 && (
           <div>
-            <h3>Visible test results</h3>
+            <h3>
+                {audience === 'staff' ? 'Test results' : 'Visible test results'}
+            </h3>
 
             <ul>
               {execution.results.map((test) => (
@@ -175,8 +183,9 @@ export default function ExecutionResults({ executionUrl }: Props) {
 
       {execution?.status === 'COMPLETED' && (
         <p className="workspace-description">
-          The total includes hidden tests. Only visible test details
-          are displayed.
+            {audience === 'staff'
+            ? 'Results include visible and hidden tests. Expected answers and execution logs are not displayed.'
+            : 'The total includes hidden tests. Only visible test details are displayed.'}
         </p>
       )}
 

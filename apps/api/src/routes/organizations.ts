@@ -131,51 +131,9 @@ organizationRouter.post(
   "/:organizationId/members",
   requireAuth,
   requireAdmin,
-  async (req, res) => {
-    const { email } = req.body ?? {};
-
-    if (
-      typeof email !== "string" ||
-      email.trim().length === 0 ||
-      email.length > 254
-    ) {
-      res.status(400).json({ error: "Enter a valid email." });
-      return;
-    }
-
-    const userResult = await pool.query(
-      "SELECT id FROM users WHERE email = $1",
-      [email.trim().toLowerCase()],
-    );
-
-    const user = userResult.rows[0];
-
-    if (!user) {
-      res.status(404).json({
-        error: "This user must register before being added.",
-      });
-      return;
-    }
-
-    const result = await pool.query(
-      `INSERT INTO organization_memberships (
-         id, user_id, organization_id, role
-       )
-       VALUES ($1, $2, $3, 'INTERVIEWER')
-       ON CONFLICT (user_id, organization_id) DO NOTHING
-       RETURNING id`,
-      [randomUUID(), user.id, req.params.organizationId],
-    );
-
-    if (result.rowCount === 0) {
-      res.status(409).json({
-        error: "This user is already a member.",
-      });
-      return;
-    }
-
-    res.status(201).json({
-      message: "Interviewer added successfully.",
+  (_req, res) => {
+    res.status(410).json({
+      error: "Direct member addition is disabled. Send an invitation instead.",
     });
   },
 );

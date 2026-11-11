@@ -12,6 +12,8 @@ import { challengeRouter } from "./routes/challenges";
 import { interviewRouter } from "./routes/interviews";
 import { invitationRouter } from "./routes/invitations";
 import { candidateInterviewRouter } from "./routes/candidate-interviews";
+import { organizationInvitationRouter } from "./routes/organization-invitations";
+import { invitationInboxRouter } from "./routes/invitation-inbox";
 
 export const app = express();
 
@@ -27,6 +29,8 @@ app.use("/api/organizations", challengeRouter);
 app.use("/api/organizations", interviewRouter);
 app.use("/api/invitations", invitationRouter);
 app.use("/api/candidate/interviews", candidateInterviewRouter);
+app.use("/api", organizationInvitationRouter);
+app.use("/api/invitation-inbox", invitationInboxRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
@@ -71,12 +75,26 @@ app.post("/api/auth/register", async (req, res) => {
     return;
   }
 
-  if (password.length < 15 || password.length > 128) {
-    res.status(400).json({
-      error: "Password must contain between 15 and 128 characters.",
-    });
-    return;
-  }
+  if (password.length < 8 || password.length > 128) {
+  res.status(400).json({
+    error: "Password must contain between 8 and 128 characters.",
+  });
+  return;
+}
+
+if (!/[A-Z]/.test(password)) {
+  res.status(400).json({
+    error: "Password must contain at least one uppercase letter.",
+  });
+  return;
+}
+
+if (!/[\p{P}\p{S}]/u.test(password)) {
+  res.status(400).json({
+    error: "Password must contain at least one special character.",
+  });
+  return;
+}
 
   const passwordHash = await argon2.hash(password, {
     type: argon2.argon2id,

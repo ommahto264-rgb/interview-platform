@@ -225,9 +225,10 @@ export default function DashboardPage() {
         </div>
 
         <div className="workspace-sidebar-footer">
-          <Link to="/invitations/accept">
-            Accept an invitation
+          <Link to="/organizations/new">
+            + Create organization
           </Link>
+          <Link to="/invitations/accept">Invitations</Link>
           <Link to="/">Back to website ↗</Link>
 
           <button

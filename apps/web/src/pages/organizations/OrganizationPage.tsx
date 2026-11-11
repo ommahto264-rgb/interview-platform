@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
+import OrganizationMembers from './OrganizationMembers'
 
 type Organization = {
   id: string
@@ -28,7 +29,7 @@ type Interview = {
   version_number: number
 }
 
-type Section = 'interviews' | 'challenges'
+type Section = 'interviews' | 'challenges' | 'members'
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString(undefined, {
@@ -179,26 +180,37 @@ export default function OrganizationPage() {
           <p className="workspace-nav-label">Organization</p>
 
           <nav className="workspace-nav" aria-label="Organization sections">
-            <button
-              type="button"
-              className={showingInterviews ? 'is-active' : ''}
-              aria-pressed={showingInterviews}
-              onClick={() => setSection('interviews')}
-            >
-              <span>Interviews</span>
-              {!loading && !error && <span>{interviews.length}</span>}
-            </button>
+  <button
+    type="button"
+    className={section === 'interviews' ? 'is-active' : ''}
+    aria-pressed={section === 'interviews'}
+    onClick={() => setSection('interviews')}
+  >
+    <span>Interviews</span>
+    {!loading && !error && <span>{interviews.length}</span>}
+  </button>
 
-            <button
-              type="button"
-              className={!showingInterviews ? 'is-active' : ''}
-              aria-pressed={!showingInterviews}
-              onClick={() => setSection('challenges')}
-            >
-              <span>Challenges</span>
-              {!loading && !error && <span>{challenges.length}</span>}
-            </button>
-          </nav>
+  <button
+    type="button"
+    className={section === 'challenges' ? 'is-active' : ''}
+    aria-pressed={section === 'challenges'}
+    onClick={() => setSection('challenges')}
+  >
+    <span>Challenges</span>
+    {!loading && !error && <span>{challenges.length}</span>}
+  </button>
+
+  {organization?.role === 'ADMIN' && (
+    <button
+      type="button"
+      className={section === 'members' ? 'is-active' : ''}
+      aria-pressed={section === 'members'}
+      onClick={() => setSection('members')}
+    >
+      <span>Members</span>
+    </button>
+  )}
+</nav>
 
           <div className="workspace-sidebar-note">
             <span className="workspace-note-line" aria-hidden="true" />
@@ -245,7 +257,42 @@ export default function OrganizationPage() {
                 Try again
               </button>
             </div>
-          ) : organization ? (
+          ) : organization && section === 'members' ? (
+  organization.role === 'ADMIN' ? (
+    <>
+      <section className="workspace-heading">
+        <div>
+          <p className="workspace-eyebrow">{organization.name}</p>
+
+          <h1>
+            Members<span>.</span>
+          </h1>
+
+          <p className="workspace-description">
+            Manage your organization’s interview team.
+          </p>
+        </div>
+      </section>
+
+      <OrganizationMembers
+        key={organization.id}
+        organizationId={organization.id}
+      />
+    </>
+  ) : (
+    <div className="workspace-state" role="alert">
+      <h2>Administrator access required.</h2>
+      <p>Only organization administrators can manage members.</p>
+
+      <button
+        type="button"
+        onClick={() => setSection('interviews')}
+      >
+        Back to interviews
+      </button>
+    </div>
+  )
+) : organization ? (
             <>
               <section className="workspace-heading">
                 <div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router'
 import '../../App.css'
@@ -7,14 +7,17 @@ export default function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [registered, setRegistered] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const submitting = useRef(false)
+
   async function handleRegister(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (loading) return
+    if (submitting.current) return
 
     setError('')
 
@@ -25,6 +28,27 @@ export default function RegisterPage() {
       return
     }
 
+    if (password.length < 8 || password.length > 128) {
+      setError('Password must contain between 8 and 128 characters.')
+      return
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter.')
+      return
+    }
+
+    if (!/[\p{P}\p{S}]/u.test(password)) {
+      setError('Password must contain at least one special character.')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+
+    submitting.current = true
     setLoading(true)
 
     try {
@@ -49,10 +73,14 @@ export default function RegisterPage() {
       }
 
       setPassword('')
+      setConfirmPassword('')
       setRegistered(true)
     } catch {
-      setError('Unable to reach the server. Please try again.')
+      setError(
+        'Unable to confirm registration. Try signing in before registering again.',
+      )
     } finally {
+      submitting.current = false
       setLoading(false)
     }
   }
@@ -84,7 +112,6 @@ export default function RegisterPage() {
 
             <form onSubmit={handleRegister}>
               <label htmlFor="register-name">Full name</label>
-
               <input
                 id="register-name"
                 name="name"
@@ -100,7 +127,6 @@ export default function RegisterPage() {
               />
 
               <label htmlFor="register-email">Email address</label>
-
               <input
                 id="register-email"
                 name="email"
@@ -115,25 +141,50 @@ export default function RegisterPage() {
               />
 
               <label htmlFor="register-password">Password</label>
-
               <input
                 id="register-password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
-                placeholder="Create a strong password"
+                placeholder="Create a password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                minLength={15}
+                minLength={8}
                 maxLength={128}
                 aria-describedby="password-help"
                 required
                 disabled={loading}
               />
 
-              <p id="password-help" className="subtitle">
-                Use 15–128 characters. A long, memorable passphrase works well.
+              <p
+                id="password-help"
+                style={{
+                  margin: '8px 0 16px',
+                  fontSize: '12px',
+                  lineHeight: 1.5,
+                  color: '#a7b5ad',
+                }}
+              >
+                8–128 characters, including an uppercase letter and a
+                special character such as !, @, or #.
               </p>
+
+              <label htmlFor="register-confirm-password">
+                Confirm password
+              </label>
+              <input
+                id="register-confirm-password"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Enter your password again"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                minLength={8}
+                maxLength={128}
+                required
+                disabled={loading}
+              />
 
               {error && (
                 <p className="error-message" role="alert">
