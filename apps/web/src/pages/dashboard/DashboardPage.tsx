@@ -225,6 +225,9 @@ export default function DashboardPage() {
         </div>
 
         <div className="workspace-sidebar-footer">
+          <Link to="/invitations/accept">
+            Accept an invitation
+          </Link>
           <Link to="/">Back to website ↗</Link>
 
           <button
@@ -475,7 +478,18 @@ export default function DashboardPage() {
                             </time>
                           </dd>
                         </div>
-                      </dl>
+                                            </dl>
+
+                      {interview.status === 'IN_PROGRESS' && (
+                        <Link
+                          to={`/candidate/interviews/${interview.id}`}
+                          className="workspace-card-footer"
+                          aria-label={`Open workspace for ${interview.title}`}
+                        >
+                          <span>Open workspace</span>
+                          <span aria-hidden="true">↗</span>
+                        </Link>
+                      )}
                     </article>
                   ))}
                 </div>

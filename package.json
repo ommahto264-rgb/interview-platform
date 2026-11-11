@@ -11,7 +11,10 @@
     "runner:build": "docker build -t interview-runner:v1 apps/worker/runner",
     "typecheck": "tsc --noEmit",
     "test:integration": "node --import tsx --test --test-concurrency=1 tests/integration/*.test.ts",
-    "test:docker": "node --import tsx --test tests/docker/*.test.ts"
+    "test:docker": "node --import tsx --test tests/docker/*.test.ts",
+    "dev:web": "npm --prefix apps/web run dev",
+    "predev": "node scripts/check-dev.mjs",
+    "dev": "concurrently --kill-others --names API,WORKER,WEB \"npm run dev:api\" \"npm run dev:worker\" \"npm run dev:web\""
   },
   "keywords": [],
   "author": "",
@@ -23,6 +26,7 @@
     "@types/express": "5.0.6",
     "@types/node": "22.20.5",
     "@types/pg": "8.23.1",
+    "concurrently": "10.0.7",
     "node-pg-migrate": "9.0.0",
     "tsx": "4.23.15",
     "typescript": "5.9.3"

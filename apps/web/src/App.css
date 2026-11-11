@@ -1,0 +1,370 @@
+/* Background shared by login and registration */
+
+.login-page {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 48px 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 15% 20%,
+      rgb(48 93 69 / 22%),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 85% 85%,
+      rgb(164 28 31 / 16%),
+      transparent 45%
+    ),
+    var(--color-background);
+}
+
+/* Crimson diagonal inspired by the landing page */
+
+.login-page::before {
+  position: absolute;
+  z-index: -1;
+  top: -20%;
+  left: 22%;
+  width: clamp(60px, 10vw, 150px);
+  height: 145%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    #651318 25%,
+    var(--color-accent) 55%,
+    transparent 90%
+  );
+  opacity: 0.35;
+  transform: rotate(-22deg);
+  pointer-events: none;
+  content: "";
+}
+
+.login-page::after {
+  position: absolute;
+  z-index: -1;
+  inset: 24px;
+  border: 1px solid rgb(164 175 168 / 12%);
+  pointer-events: none;
+  content: "";
+}
+
+/* Form panel */
+
+.login-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  padding: clamp(28px, 5vw, 48px);
+  color: var(--color-text);
+  background: linear-gradient(145deg, #14211b, #101713 65%);
+  border: 1px solid #35463b;
+  border-radius: 4px;
+  box-shadow:
+    0 30px 90px rgb(0 0 0 / 40%),
+    16px 20px 70px rgb(164 28 31 / 8%);
+}
+
+.login-card::before {
+  position: absolute;
+  top: -1px;
+  left: 48px;
+  width: 70px;
+  height: 3px;
+  background: var(--color-accent);
+  content: "";
+}
+
+/* Branding and editorial headings */
+
+.login-card .brand {
+  margin: 0 0 40px;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.login-card .brand a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.login-card .brand a:hover {
+  color: var(--color-text);
+}
+
+.login-card h1 {
+  margin: 0 0 16px;
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+
+.login-card .subtitle {
+  margin: 0 0 32px;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Fields */
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card label {
+  margin-bottom: 10px;
+  color: #d1d9d3;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.login-card input {
+  width: 100%;
+  min-height: 50px;
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  color: var(--color-text);
+  background: #09120e;
+  border: 1px solid #394b40;
+  border-radius: 3px;
+  font-size: 16px;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.login-card input::placeholder {
+  color: #89988e;
+  font-size: 13px;
+}
+
+.login-card input:hover:not(:disabled) {
+  border-color: #617768;
+}
+
+.login-card input:focus-visible {
+  border-color: #9caf9f;
+  outline: 2px solid #9caf9f;
+  outline-offset: 3px;
+  background: #0d1912;
+}
+
+.login-card input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-card input:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-text);
+  box-shadow: 0 0 0 1000px #09120e inset;
+  caret-color: var(--color-text);
+}
+
+.login-card #password-help {
+  margin: -10px 0 24px;
+  font-size: 12px;
+}
+
+/* Primary action */
+
+.login-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 8px;
+  padding: 14px 24px;
+  color: #fff5f0;
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.login-card button:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+.login-card button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-card button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+.login-card button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Feedback */
+
+.login-card .error-message,
+.login-card .success-message {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.login-card .error-message {
+  color: #ffc2bf;
+  background: rgb(164 28 31 / 12%);
+  border-color: #743336;
+}
+
+.login-card .success-message {
+  color: #b5dcc0;
+  background: rgb(50 103 67 / 15%);
+  border-color: #3f654a;
+}
+
+/* Links below the form */
+
+.login-card > p:last-child:not(.brand):not(.subtitle) {
+  margin: 28px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.login-card a {
+  color: var(--color-text);
+  text-decoration-color: #7f9686;
+  text-underline-offset: 5px;
+}
+
+.login-card a:hover {
+  color: #f1a5a1;
+  text-decoration-color: #f1a5a1;
+}
+
+/* Registration success link */
+
+.login-card > a {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* Smaller screens */
+
+@media (max-width: 540px) {
+  .login-page {
+    padding: 32px 20px;
+  }
+
+  .login-page::after {
+    inset: 10px;
+  }
+
+  .login-page::before {
+    left: 5%;
+    opacity: 0.25;
+  }
+
+  .login-card {
+    padding: 32px 24px;
+  }
+
+  .login-card::before {
+    left: 24px;
+  }
+
+  .login-card .brand {
+    margin-bottom: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card input,
+  .login-card button {
+    transition: none;
+  }
+
+  .login-card button:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Compact registration form */
+.login-card:has(#register-name) {
+  max-width: 460px;
+  padding: 28px 32px;
+}
+
+.login-card:has(#register-name) .brand {
+  margin-bottom: 20px;
+}
+
+.login-card:has(#register-name) h1 {
+  margin-bottom: 10px;
+  font-size: clamp(32px, 4vw, 40px);
+}
+
+.login-card:has(#register-name) .subtitle {
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.login-card:has(#register-name) label {
+  margin-bottom: 7px;
+}
+
+.login-card:has(#register-name) input {
+  min-height: 44px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+}
+
+.login-card:has(#register-name) #password-help {
+  margin: -4px 0 16px;
+  font-size: 11px;
+}
+
+.login-card:has(#register-name) button {
+  min-height: 44px;
+  margin-top: 0;
+  padding: 11px 20px;
+}
+
+.login-card:has(#register-name) > p:last-child {
+  margin-top: 18px;
+}
+
+@media (max-width: 540px) {
+  .login-card:has(#register-name) {
+    padding: 24px;
+  }
+}

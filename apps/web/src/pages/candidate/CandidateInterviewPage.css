@@ -1,0 +1,476 @@
+.coding-room {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #06110e;
+  color: #f2f0e9;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.coding-room * {
+  box-sizing: border-box;
+}
+
+.coding-topbar {
+  flex-shrink: 0;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #293a32;
+  background: #0c1712;
+}
+
+.coding-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #f2f0e9;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.coding-brand > span {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #c24b4d;
+  border-radius: 7px;
+  background: #a41c1f;
+  font: 22px Georgia, serif;
+}
+
+.coding-session {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  text-align: center;
+}
+
+.coding-session > span {
+  color: #a4afa8;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coding-session > strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.coding-back {
+  color: #c4cec7;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.coding-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 35fr) minmax(0, 65fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+.coding-problem,
+.coding-editor-area,
+.coding-results {
+  min-width: 0;
+  border: 1px solid #293a32;
+  border-radius: 10px;
+  background: #0c1712;
+}
+
+.coding-problem {
+  overflow: auto;
+}
+
+.coding-panel-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #293a32;
+  background: #132019;
+  font-size: 13px;
+}
+
+.coding-panel-bar > span {
+  color: #a4afa8;
+  font-size: 12px;
+}
+
+.coding-problem-content {
+  padding: 26px 24px;
+}
+
+.coding-eyebrow {
+  margin: 0 0 12px;
+  color: #d57f80;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.coding-problem h1 {
+  margin: 0 0 24px;
+  font: 600 28px/1.25 Arial, Helvetica, sans-serif;
+}
+
+.coding-description {
+  margin: 0;
+  color: #c4cec7;
+  font-size: 14px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.coding-examples-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 30px 0 16px;
+}
+
+.coding-examples-heading h2 {
+  margin: 0;
+  font: 600 16px Arial, Helvetica, sans-serif;
+}
+
+.coding-examples-heading > span {
+  color: #a4afa8;
+  font-size: 12px;
+}
+
+.coding-example {
+  margin-bottom: 16px;
+  padding: 18px;
+  border: 1px solid #293a32;
+  border-radius: 8px;
+  background: #101e16;
+}
+
+.coding-example h3 {
+  margin: 0 0 18px;
+  font: 600 13px Arial, Helvetica, sans-serif;
+}
+
+.coding-field-label {
+  display: block;
+  margin-top: 14px;
+  color: #a4afa8;
+  font-size: 11px;
+}
+
+.coding-example pre {
+  margin: 8px 0 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: #08130f;
+  color: #dfe8e1;
+  font: 13px/1.6 Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.coding-hint {
+  margin-top: 24px;
+  color: #8fa397;
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.coding-right {
+  display: grid;
+  grid-template-rows: minmax(340px, 1fr) minmax(150px, 26%);
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.coding-editor-area {
+  overflow: auto;
+}
+
+.coding-room .coding-editor-area > .challenge-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+}
+
+.coding-editor-area .challenge-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
+  margin: 0;
+  padding: 13px 18px;
+  border-bottom: 1px solid #293a32;
+  background: #132019;
+}
+
+.coding-editor-area h2,
+.coding-results h2 {
+  margin: 0;
+  font: 600 14px Arial, Helvetica, sans-serif;
+}
+
+.coding-editor-area .workspace-role,
+.coding-results .workspace-role {
+  padding: 4px 8px;
+  border: 1px solid #365040;
+  border-radius: 5px;
+  color: #c4cec7;
+  font-size: 11px;
+}
+
+.coding-editor-area .challenge-panel > .workspace-description,
+.coding-editor-area .candidate-editor-label {
+  display: none;
+}
+
+.coding-editor-area form {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.coding-room .candidate-monaco {
+  flex: 1;
+  min-height: 160px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+}
+
+.coding-editor-area #candidate-code-size {
+  margin: 0;
+  padding: 8px 16px;
+  border-top: 1px solid #293a32;
+  color: #a4afa8;
+  font-size: 11px;
+}
+
+.coding-editor-area form > .workspace-description:not(#candidate-code-size) {
+  margin: 0;
+  padding: 4px 16px;
+  color: #a4afa8;
+  font-size: 12px;
+}
+
+.coding-room button {
+  min-height: 40px;
+  padding: 10px 18px;
+  border: 1px solid #a41c1f;
+  border-radius: 6px;
+  background: #a41c1f;
+  color: #f2f0e9;
+  font: 600 13px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.coding-room button:hover:not(:disabled) {
+  background: #c1272d;
+}
+
+.coding-room button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.coding-room button:focus-visible,
+.coding-room a:focus-visible {
+  outline: 2px solid #f2f0e9;
+  outline-offset: 3px;
+}
+
+.coding-editor-area button[type="submit"] {
+  align-self: flex-end;
+  flex-shrink: 0;
+  margin: 8px 16px 12px;
+}
+
+.coding-room .error-message {
+  margin: 8px 16px;
+  color: #ffb4b4;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.coding-results {
+  overflow: auto;
+}
+
+.coding-room .coding-results > .challenge-panel {
+  margin: 0;
+  padding: 18px;
+  border: 0;
+  background: transparent;
+}
+
+.coding-results .challenge-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.coding-results h3 {
+  font: 600 14px Arial, Helvetica, sans-serif;
+  text-transform: capitalize;
+}
+
+.coding-results p,
+.coding-results li {
+  color: #a4afa8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.coding-results ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+}
+
+.coding-results-empty {
+  padding: 18px;
+}
+
+.coding-results-empty strong {
+  font-size: 14px;
+}
+
+.coding-editor-loading {
+  padding: 24px;
+  color: #a4afa8;
+}
+
+.coding-state {
+  width: min(600px, 100%);
+  margin: auto;
+  padding: 32px;
+}
+
+.coding-state h1 {
+  font-size: 24px;
+}
+
+.coding-state p {
+  color: #a4afa8;
+  line-height: 1.8;
+}
+
+.coding-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 800px) {
+  .coding-topbar {
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .coding-brand strong,
+  .coding-session > span {
+    display: none;
+  }
+
+  .coding-session {
+    text-align: left;
+    flex: 1;
+  }
+
+  .coding-back {
+    font-size: 12px;
+  }
+
+  .coding-mobile-nav {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px 0;
+  }
+
+  .coding-mobile-nav button {
+    flex: 1;
+    border-color: #293a32;
+    background: #101e16;
+    text-transform: capitalize;
+  }
+
+  .coding-mobile-nav button[aria-pressed="true"] {
+    border-color: #a41c1f;
+    background: #a41c1f;
+  }
+
+  .coding-layout {
+    display: block;
+    min-height: 0;
+  }
+
+  .coding-problem,
+  .coding-right,
+  .coding-editor-area,
+  .coding-results {
+    height: 100%;
+  }
+
+  .coding-right {
+    display: block;
+  }
+
+  .coding-room[data-mobile-view="problem"] .coding-right,
+  .coding-room[data-mobile-view="code"] .coding-problem,
+  .coding-room[data-mobile-view="code"] .coding-results,
+  .coding-room[data-mobile-view="results"] .coding-problem,
+  .coding-room[data-mobile-view="results"] .coding-editor-area {
+    display: none;
+  }
+
+  .coding-problem-content {
+    padding: 22px 18px;
+  }
+}
+
+/* Override shared challenge heading styles inside the coding workspace. */
+.coding-room .coding-editor-area .challenge-panel-heading h2,
+.coding-room .coding-results .challenge-panel h2 {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Match scrollbars to the workspace theme. */
+.coding-problem,
+.coding-editor-area,
+.coding-results {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: #365040 #0c1712;
+}

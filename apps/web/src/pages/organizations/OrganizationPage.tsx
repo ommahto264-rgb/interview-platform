@@ -375,6 +375,15 @@ export default function OrganizationPage() {
                             </dd>
                           </div>
                         </dl>
+
+                        <Link
+                          to={`/organizations/${organizationId}/interviews/${interview.id}`}
+                          className="workspace-card-footer"
+                          aria-label={`Open interview: ${interview.title}`}
+                        >
+                          <span>Open interview</span>
+                          <span aria-hidden="true">↗</span>
+                        </Link>
                       </article>
                     ))}
                   </div>

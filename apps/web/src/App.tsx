@@ -9,6 +9,9 @@ import OrganizationPage from './pages/organizations/OrganizationPage'
 import ChallengePage from './pages/challenges/ChallengePage'
 import CreateChallengePage from './pages/challenges/CreateChallengePage'
 import CreateInterviewPage from './pages/interviews/CreateInterviewPage'
+import InterviewDetailsPage from './pages/interviews/InterviewDetailsPage'
+import AcceptInvitationPage from './pages/interviews/AcceptInvitationPage'
+import CandidateInterviewPage from './pages/candidate/CandidateInterviewPage'
 
 import './App.css'
 import './pages/landing/LandingPage.css'
@@ -48,6 +51,21 @@ export default function App() {
           <Route
             path="/organizations/:organizationId/interviews/new"
             element={<CreateInterviewPage />}
+          />
+
+          <Route
+            path="/organizations/:organizationId/interviews/:interviewId"
+            element={<InterviewDetailsPage />}
+          />
+
+          <Route
+            path="/invitations/accept"
+            element={<AcceptInvitationPage />}
+          />
+
+          <Route
+            path="/candidate/interviews/:interviewId"
+            element={<CandidateInterviewPage />}
           />
         </Route>
 

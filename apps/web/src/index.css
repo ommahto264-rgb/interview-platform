@@ -1,0 +1,82 @@
+:root {
+  /* Colors inspired by your reference */
+  --color-background: #06110e;
+  --color-surface: #181818;
+  --color-accent: #a41c1f;
+  --color-accent-hover: #c1272d;
+
+  --color-text: #f2f0e9;
+  --color-muted: #a4afa8;
+  --color-border: #293a32;
+
+  /* Serif headlines and simple, readable body text */
+  --font-heading: Georgia, "Times New Roman", serif;
+  --font-body: Arial, Helvetica, sans-serif;
+
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 4px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+::selection {
+  color: var(--color-text);
+  background: var(--color-accent);
+}
