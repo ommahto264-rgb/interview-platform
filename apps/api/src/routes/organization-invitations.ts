@@ -3,6 +3,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { pool } from "../../../../packages/database/client";
 import { requireAuth } from "../middleware/require-auth";
 import { requireAdmin } from "../middleware/require-admin";
+import { requireVerifiedEmail } from "../middleware/require-verified-email";
 
 export const organizationInvitationRouter = Router();
 
@@ -188,7 +189,7 @@ organizationInvitationRouter.post(
 // Only the signed-in recipient can accept an invitation.
 organizationInvitationRouter.post(
   "/organization-invitations/accept",
-  requireAuth,
+  requireAuth, requireVerifiedEmail,
   async (req, res) => {
     const { token } = req.body ?? {};
 

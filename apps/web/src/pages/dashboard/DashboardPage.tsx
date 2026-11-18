@@ -1,6 +1,7 @@
 import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
+import VerifyEmailPanel from './VerifyEmailPanel'
 
 type Organization = {
   id: string
@@ -311,6 +312,7 @@ export default function DashboardPage() {
                 className="workspace-toolbar"
                 aria-label="Search and filters"
               >
+                <VerifyEmailPanel />
                 <div className="workspace-search">
                   <label htmlFor="workspace-search">
                     {showingOrganizations

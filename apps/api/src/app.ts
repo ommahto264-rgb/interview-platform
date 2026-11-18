@@ -14,6 +14,8 @@ import { invitationRouter } from "./routes/invitations";
 import { candidateInterviewRouter } from "./routes/candidate-interviews";
 import { organizationInvitationRouter } from "./routes/organization-invitations";
 import { invitationInboxRouter } from "./routes/invitation-inbox";
+import { emailVerificationRouter } from "./routes/email-verification";
+import { passwordResetRouter } from "./routes/password-reset";
 
 export const app = express();
 
@@ -31,6 +33,8 @@ app.use("/api/invitations", invitationRouter);
 app.use("/api/candidate/interviews", candidateInterviewRouter);
 app.use("/api", organizationInvitationRouter);
 app.use("/api/invitation-inbox", invitationInboxRouter);
+app.use("/api/auth", emailVerificationRouter);
+app.use("/api/auth", passwordResetRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });

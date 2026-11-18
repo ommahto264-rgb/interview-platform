@@ -14,6 +14,7 @@ import AcceptInvitationPage from './pages/interviews/AcceptInvitationPage'
 import CandidateInterviewPage from './pages/candidate/CandidateInterviewPage'
 import CreateOrganizationPage from './pages/organizations/CreateOrganizationPage'
 import AcceptOrganizationInvitationPage from './pages/organizations/AcceptOrganizationInvitationPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 
 import './App.css'
 import './pages/landing/LandingPage.css'
@@ -29,6 +30,8 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
 
         <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
 

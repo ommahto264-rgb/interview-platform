@@ -1,0 +1,141 @@
+.email-verify {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 28px;
+  margin: 0 0 20px;
+  padding: 20px 24px;
+  background: #101e17;
+  border: 1px solid #304437;
+  border-inline-start: 3px solid #b63b42;
+  border-radius: 8px;
+  color: #f4f0e8;
+}
+
+.email-verify-copy {
+  flex: 1 1 260px;
+}
+
+.email-verify-copy h2 {
+  margin: 0 0 5px;
+  font: 500 1.4rem/1.2 Georgia, serif;
+  color: #f4f0e8;
+}
+
+.email-verify-note,
+.email-verify-feedback {
+  margin: 0;
+  color: #bac9be;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.email-verify-actions,
+.email-verify-entry {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.email-verify button {
+  width: auto;
+  min-height: 40px;
+  margin: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.email-verify .email-verify-primary {
+  padding: 9px 17px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #a82530;
+  color: #fff;
+  font-weight: 600;
+}
+
+.email-verify .email-verify-primary:hover:not(:disabled) {
+  background: #be303c;
+}
+
+.email-verify .email-verify-secondary {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #d9e2db;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.email-verify-form {
+  display: grid;
+  gap: 5px;
+  max-width: 100%;
+  margin: 0;
+}
+
+.email-verify-form label {
+  color: #c4d0c7;
+  font-size: 0.8rem;
+}
+
+.email-verify-form .email-verify-secondary {
+  justify-self: start;
+}
+
+.email-verify-entry input {
+  box-sizing: border-box;
+  width: 23ch;
+  max-width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid #536c5b;
+  border-radius: 5px;
+  background: #09140f;
+  color: #f4f0e8;
+  font: 0.95rem/1.4 Consolas, monospace;
+}
+
+.email-verify :is(button, input):focus-visible {
+  outline: 2px solid #dfc38e;
+  outline-offset: 3px;
+}
+
+.email-verify button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.email-verify-feedback {
+  flex-basis: 100%;
+}
+
+.email-verify-feedback.is-error {
+  color: #ffb6b8;
+}
+
+.email-verify-success {
+  margin: 0 0 16px;
+  color: #badcc5;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .email-verify {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .email-verify-copy {
+    flex: auto;
+  }
+
+  .email-verify-entry input {
+    width: 100%;
+  }
+}

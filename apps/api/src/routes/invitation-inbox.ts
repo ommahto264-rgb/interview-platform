@@ -2,6 +2,7 @@ import { Router } from "express";
 import { randomUUID } from "node:crypto";
 import { pool } from "../../../../packages/database/client";
 import { requireAuth } from "../middleware/require-auth";
+import { requireVerifiedEmail } from "../middleware/require-verified-email";
 
 export const invitationInboxRouter = Router();
 
@@ -9,7 +10,7 @@ const uuidPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Only return invitations addressed to the signed-in account.
-invitationInboxRouter.get("/", requireAuth, async (_req, res) => {
+invitationInboxRouter.get("/", requireAuth, requireVerifiedEmail, async (_req, res) => {
   const userId = res.locals.auth.userId;
 
   const [organizations, interviews] = await Promise.all([
@@ -78,7 +79,7 @@ invitationInboxRouter.get("/", requireAuth, async (_req, res) => {
 // Accept an organization invitation.
 invitationInboxRouter.post(
   "/organizations/:invitationId/accept",
-  requireAuth,
+  requireAuth, requireVerifiedEmail,
   async (req, res) => {
     const { invitationId } = req.params;
     const userId = res.locals.auth.userId;
@@ -153,7 +154,7 @@ invitationInboxRouter.post(
 // Accept an interview invitation.
 invitationInboxRouter.post(
   "/interviews/:invitationId/accept",
-  requireAuth,
+  requireAuth, requireVerifiedEmail,
   async (req, res) => {
     const { invitationId } = req.params;
     const userId = res.locals.auth.userId;

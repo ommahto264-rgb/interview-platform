@@ -35,6 +35,7 @@ export default function AcceptInvitationPage() {
     useState<InterviewInvitation[]>([])
 
   const [loading, setLoading] = useState(true)
+  const [needsVerification, setNeedsVerification] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [actionError, setActionError] = useState('')
   const [message, setMessage] = useState('')
@@ -65,7 +66,19 @@ export default function AcceptInvitationPage() {
         }
 
         if (!response.ok) {
-          throw new Error('Unable to load invitations. Please try again.')
+          if (response.status === 403) {
+            const body = await response.json().catch(() => null)
+            if (controller.signal.aborted) return
+            if (body?.code === 'EMAIL_VERIFICATION_REQUIRED') {
+              setNeedsVerification(true)
+              setOrganizations([])
+              setInterviews([])
+              setMessage('')
+              setActionError('')
+              return
+            }
+          }
+          throw new Error((await response.json().catch(() => null))?.error ?? 'Unable to load invitations. Please try again.')
         }
 
         const data = await response.json()
@@ -79,6 +92,7 @@ export default function AcceptInvitationPage() {
 
         if (controller.signal.aborted) return
 
+        setNeedsVerification(false)
         setOrganizations(data.organizationInvitations)
         setInterviews(data.interviewInvitations)
       } catch (error) {
@@ -127,6 +141,12 @@ export default function AcceptInvitationPage() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 403 && data?.code === 'EMAIL_VERIFICATION_REQUIRED') {
+          setNeedsVerification(true)
+          setOrganizations([])
+          setInterviews([])
+          return
+        }
         setActionError(data.error ?? 'Unable to accept this invitation.')
 
         // Refresh invitations that became unavailable while this page was open.
@@ -244,6 +264,12 @@ export default function AcceptInvitationPage() {
 
           {loading ? (
             <p role="status">Loading your invitations…</p>
+          ) : needsVerification && !loadError ? (
+            <section className="workspace-state" aria-labelledby="verify-inbox-title">
+              <h2 id="verify-inbox-title">Verify your email to view invitations</h2>
+              <p>Verify your email on the dashboard, then return here.</p>
+              <Link className="workspace-refresh" to="/dashboard">Go to dashboard →</Link>
+            </section>
           ) : loadError ? (
             <div className="workspace-state" role="alert">
               <h2>Unable to load invitations.</h2>

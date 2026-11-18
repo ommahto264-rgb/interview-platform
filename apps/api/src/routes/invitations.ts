@@ -2,10 +2,11 @@ import { Router } from "express";
 import { createHash } from "node:crypto";
 import { pool } from "../../../../packages/database/client";
 import { requireAuth } from "../middleware/require-auth";
+import { requireVerifiedEmail } from "../middleware/require-verified-email";
 
 export const invitationRouter = Router();
 
-invitationRouter.post("/accept", requireAuth, async (req, res) => {
+invitationRouter.post("/accept", requireAuth, requireVerifiedEmail, async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
 
   const { token } = req.body ?? {};
