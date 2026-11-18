@@ -4,7 +4,9 @@ import Editor from '@monaco-editor/react'
 import '../../lib/monaco'
 
 type Props = {
+  candidateId: string
   interviewId: string
+  versionId: string
   starterCode: string
   onSubmitted: (executionUrl: string) => void
 }
@@ -14,12 +16,48 @@ type SubmissionAttempt = {
   key: string
 }
 
+type DraftState = {
+  sourceCode: string
+  status: string
+}
+
+function readDraft(key: string, starterCode: string): DraftState {
+  try {
+    const savedCode = sessionStorage.getItem(key)
+
+    if (savedCode !== null) {
+      return {
+        sourceCode: savedCode,
+        status: 'Draft restored from this tab.',
+      }
+    }
+
+    return {
+      sourceCode: starterCode,
+      status: 'Changes are saved automatically in this tab.',
+    }
+  } catch {
+    return {
+      sourceCode: starterCode,
+      status: 'Draft storage is unavailable. Copy your code before refreshing.',
+    }
+  }
+}
+
 export default function CodeEditor({
+  candidateId,
   interviewId,
+  versionId,
   starterCode,
   onSubmitted,
 }: Props) {
-  const [sourceCode, setSourceCode] = useState(starterCode)
+  const draftKey =
+    `interview-platform:draft:v1:${candidateId}:${interviewId}:${versionId}`
+
+  const [draft, setDraft] = useState<DraftState>(() =>
+    readDraft(draftKey, starterCode),
+  )
+
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
@@ -27,8 +65,45 @@ export default function CodeEditor({
   const submitting = useRef(false)
   const pendingAttempt = useRef<SubmissionAttempt | null>(null)
 
+  const sourceCode = draft.sourceCode
   const codeBytes = new TextEncoder().encode(sourceCode).length
   const maxBytes = 10 * 1024
+
+  function handleCodeChange(value: string | undefined) {
+    // Monaco can briefly provide undefined during initialization.
+    if (value === undefined) return
+
+    let status = 'Draft saved in this tab.'
+
+    try {
+      // Save immediately so a quick refresh does not lose the latest edit.
+      // An empty string is a valid draft and must also be preserved.
+      sessionStorage.setItem(draftKey, value)
+    } catch {
+      status = 'Draft could not be saved. Copy your code before refreshing.'
+    }
+
+    setDraft({
+      sourceCode: value,
+      status,
+    })
+
+    setMessage('')
+  }
+
+  function resetCode() {
+    if (submitting.current) return
+
+    const confirmed = window.confirm(
+      'Replace your current solution with the starter code?',
+    )
+
+    if (!confirmed) return
+
+    handleCodeChange(starterCode)
+    pendingAttempt.current = null
+    setError('')
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -48,7 +123,7 @@ export default function CodeEditor({
       return
     }
 
-    // Reuse the key when retrying the same code after an uncertain response.
+    // Reuse the key when retrying unchanged code after an uncertain response.
     if (
       !pendingAttempt.current ||
       pendingAttempt.current.sourceCode !== sourceCode
@@ -112,11 +187,13 @@ export default function CodeEditor({
 
       pendingAttempt.current = null
       setMessage('Code submitted. Execution queued.')
+
+      // Keep the draft so the candidate can continue editing.
       onSubmitted(executionUrl)
     } catch {
       setError(
         'Unable to confirm the submission. Your code is still here. ' +
-          'Retrying unchanged code will reuse the same request key.',
+          'Retrying unchanged code without reloading will reuse the same request key.',
       )
     } finally {
       submitting.current = false
@@ -139,13 +216,13 @@ export default function CodeEditor({
       <form onSubmit={handleSubmit}>
         <p className="candidate-editor-label">JavaScript source code</p>
 
-                <div className="candidate-monaco">
+        <div className="candidate-monaco">
           <Editor
             height="100%"
             language="javascript"
             theme="interview-dark"
             value={sourceCode}
-            onChange={(value) => setSourceCode(value ?? '')}
+            onChange={handleCodeChange}
             loading={
               <p className="workspace-description">
                 Loading code editor…
@@ -182,6 +259,10 @@ export default function CodeEditor({
           {codeBytes.toLocaleString()} / {maxBytes.toLocaleString()} bytes
         </p>
 
+        <p className="workspace-description" role="status">
+          {draft.status}
+        </p>
+
         {error && (
           <p className="error-message" role="alert">
             {error}
@@ -194,12 +275,30 @@ export default function CodeEditor({
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={saving || !sourceCode.trim() || codeBytes > maxBytes}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
         >
-          {saving ? 'Submitting…' : 'Submit solution'}
-        </button>
+          <button
+            type="button"
+            className="workspace-refresh"
+            disabled={saving}
+            onClick={resetCode}
+          >
+            Reset code
+          </button>
+
+          <button
+            type="submit"
+            disabled={saving || !sourceCode.trim() || codeBytes > maxBytes}
+          >
+            {saving ? 'Submitting…' : 'Submit solution'}
+          </button>
+        </div>
       </form>
     </section>
   )

@@ -3,7 +3,9 @@ import { Link, useNavigate, useParams } from 'react-router'
 import InterviewActions from './InterviewActions'
 import InviteCandidate from './InviteCandidate'
 import InterviewSubmissions from './InterviewSubmissions'
+import InterviewEvaluation from './InterviewEvaluation'
 import './InterviewDetailsPage.css'
+
 
 type Interview = {
   id: string
@@ -36,8 +38,9 @@ export default function InterviewDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
-  const [view, setView] = useState<'overview' | 'submissions'>('overview')
-
+  const [view, setView] = useState<
+  'overview' | 'submissions' | 'evaluation'
+>('overview')
   const organizationPath = organizationId
     ? `/organizations/${encodeURIComponent(organizationId)}`
     : '/dashboard'
@@ -177,6 +180,13 @@ export default function InterviewDetailsPage() {
               >
                 Submissions
               </button>
+              <button
+              type="button"
+              aria-pressed={view === 'evaluation'}
+              onClick={() => setView('evaluation')}
+              >
+                Evaluation
+              </button>
             </nav>
 
             <div hidden={view !== 'overview'}>
@@ -265,6 +275,14 @@ export default function InterviewDetailsPage() {
                 interviewId={interview.id}
               />
             )}
+            <div hidden={view !== 'evaluation'}>
+  <InterviewEvaluation
+    key={`${organizationId}:${interview.id}`}
+    organizationId={organizationId}
+    interviewId={interview.id}
+    status={interview.status}
+  />
+</div>
           </>
         ) : null}
       </main>

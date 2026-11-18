@@ -53,7 +53,8 @@ candidateInterviewRouter.get(
     res.setHeader("Cache-Control", "no-store");
 
     const result = await pool.query(
-      `SELECT
+       `SELECT
+         c.user_id AS candidate_id,
          v.id AS version_id,
          v.title,
          v.description,

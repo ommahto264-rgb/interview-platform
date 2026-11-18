@@ -165,7 +165,17 @@ export async function listInterviewEvaluations(
     [interviewId],
   );
 
-  res.json({
-    evaluations: result.rows,
-  });
+  const ownEvaluation = await pool.query(
+  `SELECT EXISTS (
+     SELECT 1
+     FROM interview_evaluations
+     WHERE interview_id = $1 AND reviewer_id = $2
+   ) AS submitted`,
+  [interviewId, userId],
+);
+
+res.json({
+  evaluations: result.rows,
+  hasSubmitted: ownEvaluation.rows[0].submitted,
+});
 }

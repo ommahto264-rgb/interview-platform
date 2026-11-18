@@ -6,6 +6,7 @@ import './CandidateInterviewPage.css'
 const CodeEditor = lazy(() => import('./CodeEditor'))
 
 type Challenge = {
+  candidate_id: string,
   version_id: string
   title: string
   description: string
@@ -224,11 +225,13 @@ export default function CandidateInterviewPage() {
                   }
                 >
                   <CodeEditor
-                    key={`${interviewId}:${challenge.version_id}`}
-                    interviewId={interviewId}
-                    starterCode={challenge.starter_code}
-                    onSubmitted={handleSubmitted}
-                  />
+  key={`${challenge.candidate_id}:${interviewId}:${challenge.version_id}`}
+  candidateId={challenge.candidate_id}
+  interviewId={interviewId}
+  versionId={challenge.version_id}
+  starterCode={challenge.starter_code}
+  onSubmitted={handleSubmitted}
+/>
                 </Suspense>
               </section>
 
