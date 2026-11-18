@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import InterviewActions from './InterviewActions'
@@ -58,7 +59,7 @@ export default function InterviewDetailsPage() {
           throw new Error('Organization or interview ID is missing.')
         }
 
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/organizations/${encodeURIComponent(organizationId)}` +
             `/interviews/${encodeURIComponent(interviewId)}`,
           {

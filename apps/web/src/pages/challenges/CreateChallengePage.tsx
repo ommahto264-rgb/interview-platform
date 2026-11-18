@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
@@ -57,7 +58,7 @@ export default function CreateChallengePage() {
       setOrganization(null)
 
       try {
-        const response = await fetch('/api/organizations', {
+        const response = await apiFetch('/api/organizations', {
           credentials: 'include',
           cache: 'no-store',
         })
@@ -170,7 +171,7 @@ export default function CreateChallengePage() {
     setSaving(true)
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/organizations/${encodeURIComponent(organizationId)}/challenges`,
         {
           method: 'POST',

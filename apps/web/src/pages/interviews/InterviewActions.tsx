@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useState } from 'react'
 
 type Props = {
@@ -24,7 +25,7 @@ export default function InterviewActions({
     setError('')
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/organizations/${encodeURIComponent(organizationId)}` +
           `/interviews/${encodeURIComponent(interviewId)}/${action}`,
         {

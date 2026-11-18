@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 
 type CaseResult = {
@@ -47,7 +48,7 @@ export default function ExecutionResults({
 
     async function checkExecution() {
       try {
-        const response = await fetch(executionUrl, {
+        const response = await apiFetch(executionUrl, {
           credentials: 'include',
           cache: 'no-store',
           signal: controller.signal,

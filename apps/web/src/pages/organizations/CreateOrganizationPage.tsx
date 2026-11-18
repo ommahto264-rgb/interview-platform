@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
@@ -51,7 +52,7 @@ export default function CreateOrganizationPage() {
     setSaving(true)
 
     try {
-      const response = await fetch('/api/organizations', {
+      const response = await apiFetch('/api/organizations', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -81,7 +82,7 @@ export default function CreateOrganizationPage() {
       setCreated(true)
 
       try {
-        const listResponse = await fetch('/api/organizations', {
+        const listResponse = await apiFetch('/api/organizations', {
           credentials: 'include',
           cache: 'no-store',
         })

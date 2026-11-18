@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import '../organizations/OrganizationMembers.css'
@@ -40,7 +41,7 @@ export default function InviteCandidate({
     setSaving(true)
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/organizations/${encodeURIComponent(organizationId)}` +
           `/interviews/${encodeURIComponent(interviewId)}/invitations`,
         {

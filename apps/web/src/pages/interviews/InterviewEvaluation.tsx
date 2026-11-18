@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import './InterviewEvaluation.css'
@@ -69,7 +70,7 @@ export default function InterviewEvaluation({
       setLoadError('')
 
       try {
-        const response = await fetch(endpoint, {
+        const response = await apiFetch(endpoint, {
           credentials: 'include',
           cache: 'no-store',
           signal: controller.signal,
@@ -162,7 +163,7 @@ export default function InterviewEvaluation({
     setSaving(true)
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await apiFetch(endpoint, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

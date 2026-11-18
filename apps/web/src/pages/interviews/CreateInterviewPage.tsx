@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
@@ -64,12 +65,12 @@ export default function CreateInterviewPage() {
           throw new Error('Organization ID is missing.')
         }
 
-        const options: RequestInit = {
+        const options: Parameters<typeof apiFetch>[1] = {
           credentials: 'include',
           cache: 'no-store',
         }
 
-        const organizationResponse = await fetch(
+        const organizationResponse = await apiFetch(
           '/api/organizations',
           options,
         )
@@ -107,8 +108,8 @@ export default function CreateInterviewPage() {
           `/api/organizations/${encodeURIComponent(organizationId)}`
 
         const [membersResponse, challengesResponse] = await Promise.all([
-          fetch(`${baseUrl}/members`, options),
-          fetch(`${baseUrl}/challenges`, options),
+          apiFetch(`${baseUrl}/members`, options),
+          apiFetch(`${baseUrl}/challenges`, options),
         ])
 
         if (ignore) return
@@ -199,7 +200,7 @@ export default function CreateInterviewPage() {
     setSaving(true)
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/organizations/${encodeURIComponent(organizationId)}/interviews`,
         {
           method: 'POST',

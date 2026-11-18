@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import './OrganizationMembers.css'
@@ -46,15 +47,15 @@ export default function OrganizationMembers({ organizationId }: Props) {
       setLoadError('')
 
       try {
-        const options: RequestInit = {
+        const options: Parameters<typeof apiFetch>[1] = {
           credentials: 'include',
           cache: 'no-store',
           signal: controller.signal,
         }
 
         const [membersResponse, invitationsResponse] = await Promise.all([
-          fetch(`${baseUrl}/members`, options),
-          fetch(`${baseUrl}/invitations`, options),
+          apiFetch(`${baseUrl}/members`, options),
+          apiFetch(`${baseUrl}/invitations`, options),
         ])
 
         const responses = [membersResponse, invitationsResponse]
@@ -125,7 +126,7 @@ export default function OrganizationMembers({ organizationId }: Props) {
           ? `${baseUrl}/invitations`
           : `${baseUrl}/invitations/${encodeURIComponent(invitationId)}/revoke`
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method: 'POST',
         credentials: 'include',
         headers: {

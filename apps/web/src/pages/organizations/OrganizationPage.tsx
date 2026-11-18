@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import OrganizationMembers from './OrganizationMembers'
@@ -70,7 +71,7 @@ export default function OrganizationPage() {
       const baseUrl =
         `/api/organizations/${encodeURIComponent(organizationId)}`
 
-      const options: RequestInit = {
+      const options: Parameters<typeof apiFetch>[1] = {
         credentials: 'include',
         cache: 'no-store',
       }
@@ -78,9 +79,9 @@ export default function OrganizationPage() {
       try {
         const [organizationsResponse, interviewsResponse, challengesResponse] =
           await Promise.all([
-            fetch('/api/organizations', options),
-            fetch(`${baseUrl}/interviews`, options),
-            fetch(`${baseUrl}/challenges`, options),
+            apiFetch('/api/organizations', options),
+            apiFetch(`${baseUrl}/interviews`, options),
+            apiFetch(`${baseUrl}/challenges`, options),
           ])
 
         if (ignore) return

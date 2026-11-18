@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 
@@ -50,7 +51,7 @@ export default function AcceptInvitationPage() {
       setLoadError('')
 
       try {
-        const response = await fetch('/api/invitation-inbox', {
+        const response = await apiFetch('/api/invitation-inbox', {
           credentials: 'include',
           cache: 'no-store',
           signal: controller.signal,
@@ -110,7 +111,7 @@ export default function AcceptInvitationPage() {
     setMessage('')
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/invitation-inbox/${kind}/${encodeURIComponent(id)}/accept`,
         {
           method: 'POST',

@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 
@@ -51,7 +52,7 @@ export default function ChallengePage() {
         `/challenge-versions/${encodeURIComponent(versionId)}`
 
       try {
-        const response = await fetch(url, {
+        const response = await apiFetch(url, {
           credentials: 'include',
           cache: 'no-store',
         })

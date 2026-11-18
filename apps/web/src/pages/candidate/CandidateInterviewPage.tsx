@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import ExecutionResults from './ExecutionResults'
@@ -50,7 +51,7 @@ export default function CandidateInterviewPage() {
           throw new Error('Interview ID is missing.')
         }
 
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/candidate/interviews/${encodeURIComponent(interviewId)}/challenge`,
           {
             credentials: 'include',

@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import Editor from '@monaco-editor/react'
@@ -140,7 +141,7 @@ export default function CodeEditor({
     setSaving(true)
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/candidate/interviews/${encodeURIComponent(interviewId)}/submissions`,
         {
           method: 'POST',

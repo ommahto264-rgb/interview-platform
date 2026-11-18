@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 
@@ -24,7 +25,7 @@ export default function AcceptOrganizationInvitationPage() {
     setNeedsLogin(false)
 
     try {
-      const response = await fetch('/api/organization-invitations/accept', {
+      const response = await apiFetch('/api/organization-invitations/accept', {
         method: 'POST',
         credentials: 'include',
         headers: {

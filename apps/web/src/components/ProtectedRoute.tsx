@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router'
+import { apiFetch } from '../lib/apiFetch'
 
 type SessionStatus = 'checking' | 'authenticated' | 'anonymous' | 'error'
 
@@ -13,10 +14,9 @@ export default function ProtectedRoute() {
 
     async function checkSession() {
       try {
-        const response = await fetch('/api/auth/session', {
-          credentials: 'include',
-          cache: 'no-store',
-        })
+        const response = await apiFetch('/api/auth/session', {
+  cache: 'no-store',
+})
 
         if (ignore) return
 

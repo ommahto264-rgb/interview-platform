@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import ExecutionResults from '../candidate/ExecutionResults'
 
@@ -40,7 +41,7 @@ export default function InterviewSubmissions({
       setError('')
 
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/organizations/${encodeURIComponent(organizationId)}` +
             `/interviews/${encodeURIComponent(interviewId)}/submissions`,
           {

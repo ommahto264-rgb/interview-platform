@@ -1,3 +1,4 @@
+import { apiFetch } from '../../lib/apiFetch'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 
@@ -61,11 +62,11 @@ export default function DashboardPage() {
     async function loadDashboard() {
       try {
         const [organizationResponse, interviewResponse] = await Promise.all([
-          fetch('/api/organizations', {
+          apiFetch('/api/organizations', {
             credentials: 'include',
             cache: 'no-store',
           }),
-          fetch('/api/candidate/interviews', {
+          apiFetch('/api/candidate/interviews', {
             credentials: 'include',
             cache: 'no-store',
           }),
