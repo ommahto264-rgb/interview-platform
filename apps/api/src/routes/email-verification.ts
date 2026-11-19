@@ -2,6 +2,7 @@ import { Router } from "express";
 import { createHash, randomBytes } from "node:crypto";
 import { pool } from "../../../../packages/database/client";
 import { requireAuth } from "../middleware/require-auth";
+import { gmailConfigured, sendVerificationEmail } from '../utils/gmail'
 
 export const emailVerificationRouter = Router();
 
@@ -14,10 +15,7 @@ emailVerificationRouter.post(
   requireAuth,
   async (_req, res) => {
     const userId = res.locals.auth.userId;
-    const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.VERIFICATION_FROM;
-
-    if (!apiKey || !from) {
+    if (!gmailConfigured()) {
       res.status(503).json({
         error: "Verification email delivery is not configured.",
       });
@@ -64,25 +62,7 @@ emailVerificationRouter.post(
     const displayCode = code.match(/.{4}/g)!.join("-");
 
     try {
-      const delivery = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from,
-          to: [issued.rows[0].email],
-          subject: "Verify your Interview Platform email",
-          text:
-            `Your verification code is ${displayCode}.\n\n` +
-            "Enter it in Interview Platform within 15 minutes. " +
-            "If you did not request this code, you can ignore this email.",
-        }),
-        signal: AbortSignal.timeout(10_000),
-      });
-
-      if (!delivery.ok) throw new Error("Email provider rejected the request.");
+      await sendVerificationEmail(issued.rows[0].email, code)
     } catch {
       res.status(503).json({
         error: "Email delivery could not be confirmed. Check your inbox or retry in two minutes.",
