@@ -57,7 +57,9 @@ export async function sendVerificationEmail(email: string, code: string) {
   })
 
   if (!tokenResponse.ok) {
-    console.warn('Gmail authorization failed:', tokenResponse.status)
+    const detail = await tokenResponse.json().catch(() => null)
+const reason = typeof detail?.error === 'string' && /^[a-z_]{1,64}$/.test(detail.error) ? detail.error : 'unknown_error'
+console.warn('Gmail authorization failed:', tokenResponse.status, reason)
     throw new Error('Gmail authorization failed')
   }
 
