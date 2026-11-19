@@ -16,6 +16,7 @@ import { organizationInvitationRouter } from "./routes/organization-invitations"
 import { invitationInboxRouter } from "./routes/invitation-inbox";
 import { emailVerificationRouter } from "./routes/email-verification";
 import { passwordResetRouter } from "./routes/password-reset";
+import { resolve } from "node:path";
 
 export const app = express();
 
@@ -138,6 +139,31 @@ app.get("/api/auth/session", requireAuth, (_req, res) => {
     message: "You are authenticated.",
   });
 });
+if (process.env.NODE_ENV === "production") {
+  const webDir = resolve("public");
+
+  // Unknown API routes must still return JSON, even if opened in a browser.
+  app.use("/api", (_req, res) => {
+    res.status(404).json({ error: "Route not found." });
+  });
+
+  // Serve the React build: index.html, JavaScript, CSS, and images.
+  app.use(express.static(webDir));
+
+  // Let React handle direct visits and refreshes on pages like /dashboard.
+  app.get(/.*/, (req, res, next) => {
+    if (
+      req.path.startsWith("/assets/") ||
+      req.path.includes(".") ||
+      !req.accepts("html")
+    ) {
+      next();
+      return;
+    }
+
+    res.sendFile(resolve(webDir, "index.html"));
+  });
+}
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Route not found." });
