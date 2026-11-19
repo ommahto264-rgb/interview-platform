@@ -3,13 +3,6 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { pool } from "../../../../packages/database/client";
 
 export async function createInterviewInvitation(req: Request, res: Response) {
-    // Email delivery must be configured before enabling this in production.
-    if (process.env.NODE_ENV === "production") {
-      res.status(503).json({
-        error: "Invitation email delivery is not configured.",
-      });
-      return;
-    }
 
     const { organizationId, interviewId } = req.params;
     const { email } = req.body ?? {};
@@ -123,6 +116,50 @@ export async function createInterviewInvitation(req: Request, res: Response) {
     }
 
     res.setHeader("Cache-Control", "no-store");
+
+    if (process.env.NODE_ENV === "production") {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.VERIFICATION_FROM;
+  let emailAccepted = false;
+
+  if (apiKey && from) {
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from,
+          to: [email.trim().toLowerCase()],
+          subject: "You're invited to an interview",
+          text: [
+            "You have a new interview invitation.",
+            "Sign in to Interview Platform using this email address.",
+            "Open Invitations on your dashboard to review and accept it.",
+          ].join("\n\n"),
+        }),
+        signal: AbortSignal.timeout(8000),
+      });
+
+      emailAccepted = response.ok;
+      if (!response.ok) {
+        console.warn("Interview invitation email rejected:", response.status);
+      }
+    } catch {
+      console.warn("Could not confirm interview invitation email delivery.");
+    }
+  }
+
+  res.status(201).json({
+    emailAccepted,
+    message: emailAccepted
+      ? "Invitation created. Email accepted for delivery."
+      : "Invitation created. Email delivery was not confirmed. The candidate can accept it from their dashboard.",
+  });
+  return;
+}
 
     res.status(201).json({
       message: "Invitation created for local testing.",
